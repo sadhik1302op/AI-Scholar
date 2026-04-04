@@ -4,7 +4,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Production Ready API Sync Route
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL + '/api';
 const SYNC_URL = `${BASE_URL}/auth/sync`;
 
 const useProgressStore = create((set, get) => ({

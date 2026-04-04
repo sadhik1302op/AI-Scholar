@@ -24,7 +24,7 @@ export default function AITutorPage() {
       setIsTyping(true);
 
       try {
-         const response = await axios.post('http://localhost:5000/api/ai/ask', {
+         const response = await axios.post(process.env.EXPO_PUBLIC_API_URL + '/api/ai/ask', {
             question: userText
          });
          
