@@ -15,7 +15,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://ai-scholar-indol.vercel.app",
+  origin: ["https://ai-scholar-indol.vercel.app", "https://ai-scholar-a1817.web.app", "http://localhost:8081", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
