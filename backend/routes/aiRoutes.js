@@ -1,8 +1,11 @@
 const express = require('express');
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { protect } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
+
+// Initialize Gemini API
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // AI Chatbot Tutor
 router.post('/ask', async (req, res) => {
@@ -12,33 +15,19 @@ router.post('/ask', async (req, res) => {
   try {
     const prompt = `Explain this simply for a middle school student with examples: ${question}`;
     
-    // Using HuggingFace's official Router API format with a verified supported model
-    const response = await axios.post(
-      'https://router.huggingface.co/v1/chat/completions',
-      { 
-        model: "meta-llama/Llama-3.3-70B-Instruct",
-        messages: [{ role: "user", content: prompt }]
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    // Using Gemini API
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let generatedText = response.text();
 
-    let generatedText = "I couldn't generate a response.";
-    if (response.data && response.data.choices && response.data.choices.length > 0) {
-      generatedText = response.data.choices[0].message.content;
+    if (!generatedText) {
+      generatedText = "I couldn't generate a response.";
     }
 
     res.json({ reply: generatedText });
   } catch (error) {
-    console.error("HuggingFace API Error:", error.response?.data || error.message);
-    
-    if (error.response && error.response.status === 503) {
-      return res.json({ reply: "AI is warming up, please try again in a few seconds." });
-    }
+    console.error("Gemini API Error:", error.message);
     
     res.json({ reply: "AI is currently unavailable. Please try again later." });
   }
