@@ -16,7 +16,7 @@ router.post('/ask', async (req, res) => {
     const prompt = `Explain this simply for a middle school student with examples: ${question}`;
     
     // Using Gemini API
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let generatedText = response.text();
