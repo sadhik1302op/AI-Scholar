@@ -5,6 +5,8 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import AntiGravityBackground from '../../components/AntiGravityBackground';
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://ai-scholar-backend.onrender.com';
+
 export default function AITutorPage() {
    const [messages, setMessages] = useState([
       { id: '1', text: "Hello! I am your AI-Scholar Tutor. How can I help you master Artificial Intelligence today?", sender: "ai" }
@@ -24,7 +26,7 @@ export default function AITutorPage() {
       setIsTyping(true);
 
       try {
-         const response = await axios.post(process.env.EXPO_PUBLIC_API_URL + '/api/ai/ask', {
+         const response = await axios.post(API_BASE_URL + '/api/ai/ask', {
             question: userText
          });
          
