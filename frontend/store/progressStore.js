@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 // Production Ready API Sync Route
 const API_BASE_URL = 'https://ai-scholar-backend.onrender.com'; // Hardcoded per request
 const BASE_URL = API_BASE_URL + '/api';
@@ -18,7 +16,7 @@ const useProgressStore = create((set, get) => ({
   // Loads initial data if user returns
   fetchProgress: async () => {
     try {
-      const dataStr = await AsyncStorage.getItem('progressData');
+      const dataStr = localStorage.getItem('progressData');
       if (dataStr) {
         set({ ...JSON.parse(dataStr) });
       }
@@ -27,12 +25,12 @@ const useProgressStore = create((set, get) => ({
 
   syncDatabase: async (newState) => {
     try {
-        const token = await AsyncStorage.getItem('token');
+        const token = localStorage.getItem('token');
         if (token) {
            await axios.put(SYNC_URL, { progressData: JSON.stringify(newState) }, {
                headers: { Authorization: `Bearer ${token}` }
            });
-           await AsyncStorage.setItem('progressData', JSON.stringify(newState));
+           localStorage.setItem('progressData', JSON.stringify(newState));
         }
     } catch (e) {
         console.error("Failed to sync progress to Database:", e.response?.data?.message || e.message);

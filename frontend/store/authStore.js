@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = 'https://ai-scholar-backend.onrender.com'; // Hardcoded per request to prevent localhost leakage
 const BASE_URL = API_BASE_URL + '/api';
@@ -15,8 +14,8 @@ const useAuthStore = create((set, get) => ({
   // Load from storage on boot if needed
   checkSession: async () => {
     try {
-      const storedToken = await AsyncStorage.getItem('token');
-      const storedUser = await AsyncStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
       if (storedToken && storedUser) {
         set({ token: storedToken, user: JSON.parse(storedUser) });
       }
@@ -33,10 +32,10 @@ const useAuthStore = create((set, get) => ({
       
       const { token, progressData, ...userData } = response.data;
       
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
       if (progressData) {
-          await AsyncStorage.setItem('progressData', progressData);
+          localStorage.setItem('progressData', progressData);
       }
       
       set({ user: userData, token, isLoading: false, error: null });
@@ -58,10 +57,10 @@ const useAuthStore = create((set, get) => ({
       
       const { token, progressData, ...userData } = response.data;
       
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
       if (progressData) {
-          await AsyncStorage.setItem('progressData', progressData);
+          localStorage.setItem('progressData', progressData);
       }
       
       set({ user: userData, token, isLoading: false, error: null });
@@ -76,8 +75,8 @@ const useAuthStore = create((set, get) => ({
   },
   
   logout: async () => {
-    await AsyncStorage.removeItem('token');
-    await AsyncStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     set({ user: null, token: null });
   },
   
