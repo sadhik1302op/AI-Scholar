@@ -4,7 +4,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Production Ready API Sync Route
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://ai-scholar-backend.onrender.com';
+const API_BASE_URL = 'https://ai-scholar-backend.onrender.com'; // Hardcoded per request
 const BASE_URL = API_BASE_URL + '/api';
 const SYNC_URL = `${BASE_URL}/auth/sync`;
 

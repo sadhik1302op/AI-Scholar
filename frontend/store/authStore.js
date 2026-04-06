@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://ai-scholar-backend.onrender.com';
+const API_BASE_URL = 'https://ai-scholar-backend.onrender.com'; // Hardcoded per request to prevent localhost leakage
 const BASE_URL = API_BASE_URL + '/api';
 const API_URL = `${BASE_URL}/auth`;
 

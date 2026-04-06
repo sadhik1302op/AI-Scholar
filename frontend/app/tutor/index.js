@@ -5,7 +5,7 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import AntiGravityBackground from '../../components/AntiGravityBackground';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://ai-scholar-backend.onrender.com';
+const API_BASE_URL = 'https://ai-scholar-backend.onrender.com'; // Hardcoded per request
 
 export default function AITutorPage() {
    const [messages, setMessages] = useState([
