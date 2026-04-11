@@ -41,7 +41,8 @@ const PreviewCard = ({ title, description }) => {
             onPress={() => router.push('/login')}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            style={[styles.card, isHovered && styles.cardHover, Platform.OS === 'web' && { transition: 'transform 0.3s ease, box-shadow 0.3s ease' }]}
+            style={[styles.card, isHovered && styles.cardHover, Platform.OS === 'web' && 
+                { transition: 'transform 0.3s ease, box-shadow 0.3s ease' }]}
         >
             <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>{title}</Text>

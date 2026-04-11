@@ -10,7 +10,12 @@ const quizQuestions = [
   { question: "Which algorithm is used for Classification?", options: ["Linear Regression", "Logistic Regression", "K-Means", "PCA"], answer: 1 },
   { question: "What does CNN stand for in Deep Learning?", options: ["Central Neural Network", "Convolutional Neural Network", "Computer Neutral Node", "Conditional Naive Network"], answer: 1 },
   { question: "What is an epoch?", options: ["A single forward pass", "One complete pass through the training dataset", "The learning rate", "An activation function"], answer: 1 },
-  { question: "What is the primary purpose of an Activation Function?", options: ["To introduce non-linearity", "To increase memory", "To initialize weights", "To calculate loss"], answer: 0 }
+  { question: "What is the primary purpose of an Activation Function?", options: ["To introduce non-linearity", "To increase memory", "To initialize weights", "To calculate loss"], answer: 0 },
+  { question: "What is Supervised Learning?", options: ["Learning without labels", "Learning with labeled data", "Learning by punishment", "Learning without data"], answer: 1 },
+  { question: "What does NLP stand for?", options: ["Natural Language Processing", "Neural Logic Protocol", "Network Learning Phase", "New Logical Platform"], answer: 0 },
+  { question: "What is the role of a loss function?", options: ["To increase accuracy", "To measure how wrong the model is", "To clean data", "To speed up training"], answer: 1 },
+  { question: "Which of the following is an unsupervised learning task?", options: ["Image Classification", "Spam Detection", "Clustering", "Price Prediction"], answer: 2 },
+  { question: "What is Data Bias?", options: ["A type of neural network", "When data contains human prejudices", "A good thing for AI", "When data is perfectly balanced"], answer: 1 }
 ];
 
 export default function SmartQuiz() {
@@ -20,9 +25,12 @@ export default function SmartQuiz() {
    const [score, setScore] = useState(0);
    const [isFinished, setIsFinished] = useState(false);
    const [selectedOption, setSelectedOption] = useState(null);
+   const [hasAnswered, setHasAnswered] = useState(false);
 
    const handleSelect = (idx) => {
+       if (hasAnswered) return;
        setSelectedOption(idx);
+       setHasAnswered(true);
    };
 
    const handleNext = () => {
@@ -33,6 +41,7 @@ export default function SmartQuiz() {
        if (currentIndex < quizQuestions.length - 1) {
            setCurrentIndex(currentIndex + 1);
            setSelectedOption(null);
+           setHasAnswered(false);
        } else {
            finishQuiz(score + (selectedOption === quizQuestions[currentIndex].answer ? 1 : 0));
        }
@@ -69,20 +78,34 @@ export default function SmartQuiz() {
                           <Text style={styles.questionText}>{quizQuestions[currentIndex].question}</Text>
                           
                           <View style={styles.optionsList}>
-                              {quizQuestions[currentIndex].options.map((opt, idx) => (
-                                  <TouchableOpacity 
-                                     key={idx} 
-                                     style={[styles.optionBtn, selectedOption === idx && styles.optionSelected]}
-                                     onPress={() => handleSelect(idx)}
-                                  >
-                                      <Text style={styles.optionText}>{opt}</Text>
-                                  </TouchableOpacity>
-                              ))}
+                              {quizQuestions[currentIndex].options.map((opt, idx) => {
+                                  let isCorrect = idx === quizQuestions[currentIndex].answer;
+                                  let isSelected = selectedOption === idx;
+                                  
+                                  let optionStyle = [styles.optionBtn];
+                                  if (hasAnswered) {
+                                      if (isCorrect) optionStyle.push({ borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)' });
+                                      else if (isSelected) optionStyle.push({ borderColor: '#EF4444', backgroundColor: 'rgba(239, 68, 68, 0.1)' });
+                                  } else if (isSelected) {
+                                      optionStyle.push(styles.optionSelected);
+                                  }
+
+                                  return (
+                                      <TouchableOpacity 
+                                         key={idx} 
+                                         style={optionStyle}
+                                         onPress={() => handleSelect(idx)}
+                                         disabled={hasAnswered}
+                                      >
+                                          <Text style={styles.optionText}>{opt}</Text>
+                                      </TouchableOpacity>
+                                  )
+                              })}
                           </View>
 
                           <TouchableOpacity 
-                             style={[styles.nextBtn, selectedOption === null && { opacity: 0.5 }]} 
-                             disabled={selectedOption === null}
+                             style={[styles.nextBtn, !hasAnswered && { opacity: 0.5 }]} 
+                             disabled={!hasAnswered}
                              onPress={handleNext}
                           >
                              <Text style={styles.nextText}>{currentIndex === quizQuestions.length - 1 ? 'Submit Quiz' : 'Next Question'}</Text>

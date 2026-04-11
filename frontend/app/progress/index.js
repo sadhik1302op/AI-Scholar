@@ -1,12 +1,33 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router, Stack } from 'expo-router';
+import axios from 'axios';
 import useProgressStore from '../../store/progressStore';
 import Navbar from '../../components/Navbar';
 import AntiGravityBackground from '../../components/AntiGravityBackground';
 
 export default function ProgressReportPage() {
    const { modulesCompleted, quizScores, weakTopics, accuracy } = useProgressStore();
+   
+   const [aiRecommendations, setAiRecommendations] = useState('');
+   const [loadingAi, setLoadingAi] = useState(false);
+
+   useEffect(() => {
+       if (weakTopics.length > 0) {
+           setLoadingAi(true);
+           const topicsStr = weakTopics.join(', ');
+           axios.post('https://ai-scholar-backend.onrender.com/api/ai/ask', {
+               question: `I am a middle school student and I took a quiz but I struggled with: ${topicsStr}. Please recommend a couple of practical YouTube search topics or short concepts I should study to get better at this.`
+           }).then(res => {
+               setAiRecommendations(res.data.reply);
+           }).catch(err => {
+               console.error("AI Recommender Error:", err);
+               setAiRecommendations("Couldn't load AI recommendations right now. Try searching YouTube for the weak topics listed above!");
+           }).finally(() => {
+               setLoadingAi(false);
+           });
+       }
+   }, [weakTopics]);
 
    return (
       <View style={styles.container}>
@@ -41,13 +62,24 @@ export default function ProgressReportPage() {
                 </View>
 
                 <View style={styles.detailedSection}>
-                     <Text style={styles.sectionTitle}>Identified Weaknesses</Text>
+                     <Text style={styles.sectionTitle}>Identified Weaknesses & AI Guidance</Text>
                      {weakTopics.length > 0 ? (
-                         weakTopics.map((topic, i) => (
-                             <View key={i} style={styles.weakBadge}>
-                                 <Text style={styles.weakText}>⚠️ {topic} (Action Required)</Text>
+                         <>
+                             {weakTopics.map((topic, i) => (
+                                 <View key={i} style={styles.weakBadge}>
+                                     <Text style={styles.weakText}>⚠️ {topic} (Action Required)</Text>
+                                 </View>
+                             ))}
+                             
+                             <View style={styles.aiRecommendationCard}>
+                                 <Text style={styles.aiHeader}>🤖 AI Recommendations</Text>
+                                 {loadingAi ? (
+                                    <ActivityIndicator size="small" color="#06B6D4" style={{ marginTop: 10 }} />
+                                 ) : (
+                                    <Text style={styles.aiText}>{aiRecommendations}</Text>
+                                 )}
                              </View>
-                         ))
+                         </>
                      ) : (
                          <Text style={styles.perfectText}>All systems optimal! No weak areas detected.</Text>
                      )}
@@ -101,5 +133,9 @@ const styles = StyleSheet.create({
 
   quizResultCard: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
   quizTopic: { color: '#D1D5DB', fontSize: 16 },
-  quizScore: { fontWeight: 'bold', fontSize: 16 }
+  quizScore: { fontWeight: 'bold', fontSize: 16 },
+
+  aiRecommendationCard: { marginTop: 20, backgroundColor: 'rgba(6, 182, 212, 0.1)', padding: 15, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(6, 182, 212, 0.3)' },
+  aiHeader: { color: '#06B6D4', fontWeight: 'bold', fontSize: 16, marginBottom: 8 },
+  aiText: { color: '#E5E7EB', lineHeight: 22, fontSize: 15, fontFamily: Platform.OS === 'web' ? 'Inter, sans-serif' : 'System' }
 });
